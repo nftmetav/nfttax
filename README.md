@@ -1,3 +1,8 @@
+# TODO
+
+- [ ] Parse OpenSea event objects to get all taxable ations like buy/sell/transfer etc
+- [ ] Figure out if OpenSea API captures off-platform events
+
 # Dev
 
 ```
@@ -6,7 +11,7 @@
     $ pip install -r requirements.txt
 ``` 
 
-# Deploy
+# Google App Engine Deploy
 
 Inside Cloud Shell:
 
