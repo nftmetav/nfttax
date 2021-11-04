@@ -1,21 +1,23 @@
 import opensea
 
+NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+
 def _parse_action(from_address, to_address, owner_address):
-    if from_address.startswith('0x00000000000000') and to_address == owner_address:
+    if from_address == NULL_ADDRESS and to_address == owner_address:
         return 'minted'
     
-    """
     if to_address == owner_address:
-        return 'buy'
+        return 'transfer_in'
     
     if from_address == owner_address:
-        return 'sell'
-    """
+        return 'transfer_out'
 
     return 'other'
 
-def get_trading_history(wallet_address):
-    parsed_events = []
+def get_trading_history(wallet_address, start_date=None, end_date=None):
+    # TODO: set start_date and end_date for calling opensea api
+
+    taxable_events = []
 
     raw_events = opensea.get_events(wallet_address, 'transfer', limit=20)
     for event in raw_events.get('asset_events', []):
@@ -28,14 +30,12 @@ def get_trading_history(wallet_address):
         from_address = event.get('from_account', {}).get('address')
         to_address = event.get('to_account', {}).get('address')
         action = _parse_action(from_address, to_address, wallet_address)
-        if not action == 'minted':
-            continue
 
         tx = event.get('transaction')
         tx.pop('from_account')
         tx.pop('to_account')
 
-        parsed_events.append({
+        taxable_events.append({
             'asset': {
                 # 'opensea_id': opensea_id,
                 'token_id': token_id,
@@ -48,4 +48,4 @@ def get_trading_history(wallet_address):
             'transaction': tx,
         })
 
-    return {"trading_events": parsed_events}
+    return {"taxable_events": taxable_events}

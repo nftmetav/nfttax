@@ -1,7 +1,9 @@
 # TODO
 
-- [ ] Parse OpenSea event objects to get all taxable ations like buy/sell/transfer etc
-- [ ] Figure out if OpenSea API captures off-platform events
+- [x] Parse OpenSea event objects to get all taxable ations like buy/sell/transfer etc
+- [x] Figure out if OpenSea API captures off-platform events
+- [ ] Use tx hash to query tx details from Etherscan/OpenNode
+- [ ] Return taxable events within given date range
 
 # Dev
 
@@ -16,6 +18,6 @@
 Inside Cloud Shell:
 
 ```
-    $ gcloud config set project celtic-vent-330903
+    $ gcloud config set project <project_name>
     $ gcloud app deploy
 ```
