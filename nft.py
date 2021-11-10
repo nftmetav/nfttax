@@ -1,4 +1,5 @@
 import opensea
+from tx import w3
 
 NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
@@ -13,6 +14,19 @@ def _parse_action(from_address, to_address, owner_address):
         return 'transfer_out'
 
     return 'other'
+
+def _tx_fees(tx_hash):
+    receipt_data = w3.eth.get_transaction_receipt(tx_hash)
+
+    return {
+        'gas_price': receipt_data.get('effectiveGasPrice'),
+        'gas_used': receipt_data.get('gasUsed'),
+    }
+
+def _tx_value(tx_hash):
+    tx_data = w3.eth.get_transaction(tx_hash)
+    return tx_data.get('value')
+
 
 def get_trading_history(wallet_address, start_date=None, end_date=None):
     # TODO: set start_date and end_date for calling opensea api
@@ -34,6 +48,12 @@ def get_trading_history(wallet_address, start_date=None, end_date=None):
         tx = event.get('transaction')
         tx.pop('from_account')
         tx.pop('to_account')
+
+        # add gas used and gas price to the tx objct
+        tx_hash = tx.get('transaction_hash')
+        if tx_hash:
+            tx.update(fees=_tx_fees(tx_hash))
+            tx.update(value=_tx_value(tx_hash))
 
         taxable_events.append({
             'asset': {
