@@ -7,25 +7,44 @@
 
 # Dev
 
+## API
 Install dependencies:
 ```
-    $ virtualenv --python python3 ~/envs/nft_trading_history
-    $ source ~/envs/nft_trading_history/bin/activate
-    $ pip install -r requirements.txt
+$ cd api/
+$ virtualenv --python python3 ~/envs/nft_trading_history
+$ source ~/envs/nft_trading_history/bin/activate
+$ pip install -r requirements.txt
 ```
 
-Run the http server:
+Start the API server:
 ```
-    $ cp ./api_keys.json.template ./api_keys.json # then add api keys to api_keys.json
-    $ python main.py
+$ cp ./api_keys.json.template ./api_keys.json # then add api keys to api_keys.json
+$ python main.py
+```
+
+## Webapp
+```
+$ cd web/
+$ npm install && npm run start
 ```
 
 # Google App Engine Deploy
 
-Inside Cloud Shell:
+Inside Cloud Shell, deploy API server and Webapp separately.
+
+## API
+```
+$ cd api/
+$ cp ./api_keys.json.template ./api_keys.json # then add api keys to api_keys.json
+$ gcloud config set project <project_name>
+$ gcloud app deploy
+```
+
+## Web
+Webpack must be listed in the dependencies of the `package.json` file because by default `devDependencies` are not installed when the app is deployed to App Engine.
 
 ```
-    $ cp ./api_keys.json.template ./api_keys.json # then add api keys to api_keys.json
-    $ gcloud config set project <project_name>
-    $ gcloud app deploy
+$ cd web/
+$ gcloud config set project <project_name>
+$ gcloud app deploy
 ```
