@@ -37,5 +37,3 @@ and connect to [http://localhost:6660](http://localhost:6660).~~~~
 ## Licence
 
 MIT
-
-

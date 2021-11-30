@@ -12,4 +12,3 @@ docker stop nginx-letsencrypt
 docker rm nginx-letsencrypt
 
 docker rmi nginx jwilder/docker-gen jrcs/letsencrypt-nginx-proxy-companion
-

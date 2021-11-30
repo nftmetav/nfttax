@@ -99,4 +99,3 @@ app.closeDb = () => {
 }
 
 module.exports = app
-

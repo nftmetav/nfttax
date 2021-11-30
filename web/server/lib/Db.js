@@ -23,4 +23,3 @@ if (!instance) {
   instance = new Db()
 }
 module.exports = instance
-

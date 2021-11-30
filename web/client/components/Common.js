@@ -20,4 +20,3 @@ export default class Common extends React.Component {
     return <div/>
   }
 }
-

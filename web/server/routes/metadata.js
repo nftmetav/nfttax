@@ -46,4 +46,3 @@ router.get('/ed2/:id', async (req, res) => {
 
 
 module.exports = router
-
