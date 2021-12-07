@@ -6,6 +6,10 @@ node_url = f"https://eth-mainnet.alchemyapi.io/v2/{api_keys.alchemy()}"
 w3 = Web3(Web3.HTTPProvider(node_url))
 
 
+class AlchemyApiException(Exception):
+    pass
+
+
 class Event(object):
     def __init__(self, wallet_address, action, other_party, asset):
         self.wallet_address = wallet_address
@@ -36,37 +40,44 @@ def get_nft_events(wallet_address, from_block="latest", to_block="latest"):
             ],
         },
     )
+    if response.status_code != 200:
+        raise AlchemyApiException()
+
     events = list()
-    if response.status_code == 200:
-        transfers = response.json().get("result").get("transfers")
-        print(f"{len(transfers)} transfers found")
-        for t in transfers:
-            tx_hash = t.get("hash")
+    transfers = response.json().get("result").get("transfers")
+    print(f"{len(transfers)} transfers found")
 
-            print(f"tx: {tx_hash}")
+    for t in transfers:
+        tx_hash = t.get("hash")
 
-            tx = w3.eth.get_transaction(t.get("hash"))
-            if not tx.get("input") or tx.get("input") == "0x":
-                return
+        print(f"tx: {tx_hash}")
 
-            if tx.get("input").startswith("0xab834bab"):
-                contract = tx.get("input")[10 + 64 * 11 : 10 + 64 * 12][24:]
-                buy_maker = tx.get("input")[10 + 64 : 10 + 64 + 64]
-                buy_taker = tx.get("input")[10 + 64 + 64 : 10 + 64 + 64 + 64]
+        tx = w3.eth.get_transaction(t.get("hash"))
 
-                _wallet_address = wallet_address.replace("0x", "")
+        # Skip non-NFT tx
+        if not tx.get("input") or tx.get("input") == "0x":
+            continue
 
-                action = None
-                trading_with = None
-                if buy_maker.find(_wallet_address) >= 0:
-                    action = "buy"
-                    trading_with = buy_taker[24:]
-                elif buy_taker.find(_wallet_address) >= 0:
-                    action = "sell"
-                    trading_with = buy_maker[24:]
+        if tx.get("input").startswith("0xab834bab"):
+            contract = tx.get("input")[10 + 64 * 11 : 10 + 64 * 12][24:]
+            buy_maker = tx.get("input")[10 + 64 : 10 + 64 + 64]
+            buy_taker = tx.get("input")[10 + 64 + 64 : 10 + 64 + 64 + 64]
 
-                # get token id by looking into receipt log
-                receipt_logs = w3.eth.get_transaction_receipt(tx_hash).get("logs")
+            _wallet_address = wallet_address.replace("0x", "")
+
+            action = None
+            trading_with = None
+            if buy_maker.find(_wallet_address) >= 0:
+                action = "buy"
+                trading_with = buy_taker[24:]
+            elif buy_taker.find(_wallet_address) >= 0:
+                action = "sell"
+                trading_with = buy_maker[24:]
+
+            # get token id by looking into receipt log
+            receipt = w3.eth.get_transaction_receipt(tx_hash)
+            if receipt.status > 0:
+                receipt_logs = receipt.get("logs")
                 token_id = receipt_logs[0].get("topics")[3]  # HexBytes
                 token_id = int(token_id.hex(), 16)
 
@@ -85,12 +96,11 @@ def get_nft_events(wallet_address, from_block="latest", to_block="latest"):
                 print(
                     f"\tatomicMatch_: {action} contract {contract}, trading_with {trading_with}"
                 )
-            elif tx.get("input").startswith("0x6ecd2306"):
-                print("\tmint")
-            else:
-                print(f"\tunknown method id: {tx.get('input')[:10]}")
-    else:
-        print(response.status_code, response.content)
+                print(f"#EVENTS: {len(events)}")
+        elif tx.get("input").startswith("0x6ecd2306"):
+            print("\tmint")
+        else:
+            print(f"\tunknown method id: {tx.get('input')[:10]}")
 
     return events
 

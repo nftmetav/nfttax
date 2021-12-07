@@ -24,7 +24,7 @@ $ python main.py
 
 ## Webapp
 ```
-$ cd web/
+$ cd www/
 $ npm install && npm run start
 ```
 
