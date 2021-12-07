@@ -7,6 +7,7 @@ from flask import jsonify
 from gevent.pywsgi import WSGIServer
 
 import nft
+import tx
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -25,7 +26,9 @@ def v0_get_trading_history(wallet_address):
     # TODO: reject invalid wallet address
 
     try:
-        return jsonify({"data": nft.get_trading_history(wallet_address)})
+        return jsonify(
+            {"data": tx.get_nft_events(wallet_address, from_block="0xCFFF00")}
+        )
     except Exception as e:
         return jsonify({"error": {"message": e.__class__.__name__}})
 

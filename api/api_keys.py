@@ -16,3 +16,7 @@ def opensea():
 
 def etherscan():
     return api_keys.get("etherscan")
+
+
+def alchemy():
+    return api_keys.get("alchemy")
