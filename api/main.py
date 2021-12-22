@@ -34,6 +34,9 @@ def v0_get_trading_history(wallet_address):
         return jsonify({"error": {"message": "Invalid wallet address"}})
     # TODO: reject invalid wallet address
 
+    # Normalize wallet address
+    wallet_address = wallet_address.lower()
+
     try:
         return jsonify({"data": nft.get_trading_history(wallet_address)})
     except Exception as e:

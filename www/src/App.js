@@ -2,11 +2,11 @@ import './App.css';
 import TxTable from './TxTable';
 import AppBar from './AppBar';
 
-function App() {
+const App = () => {
   return (
     <div className="App">
       <AppBar />
-      <div style={{ display: 'flex',  justifyContent:'center', marginTop: '20px' }}>
+      <div className="tx-table-container">
         <TxTable />
       </div>
     </div>

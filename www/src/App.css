@@ -36,3 +36,10 @@
     transform: rotate(360deg);
   }
 }
+
+.tx-table-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+}

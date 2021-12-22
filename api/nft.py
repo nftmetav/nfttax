@@ -63,7 +63,9 @@ def get_trading_history(wallet_address, start_date=None, end_date=None):
             to_address = event.get("to_account", {}).get("address")
             action = _parse_action(from_address, to_address, wallet_address)
 
-            assert action in ("mint", "transfer_in", "transfer_out")
+            if action not in ("mint", "transfer_in", "transfer_out"):
+                print(f"Skip unknown action: {event}")
+                continue
 
             tx = event.get("transaction")
             tx.pop("from_account")

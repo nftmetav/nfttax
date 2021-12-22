@@ -216,7 +216,7 @@ export default function EnhancedTable() {
 
   const [rows, setRows] = React.useState([]);
   React.useEffect(() => {
-    fetch("http://localhost:8080/v0/history/0x0ece90ef4a12273e9c2c06e7c86075d021db5a6a")
+    fetch("http://localhost:8080/v0/history/0x50bd604c433C394e5e95F267DF8c4ca7fE760420")
       .then(res => res.json())
       .then(_data => {
         const { data } = _data;
