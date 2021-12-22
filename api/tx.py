@@ -1,8 +1,8 @@
-from web3 import Web3
-import api_keys
+import my_secrets
 import requests
+from web3 import Web3
 
-node_url = f"https://eth-mainnet.alchemyapi.io/v2/{api_keys.alchemy()}"
+node_url = f"https://eth-mainnet.alchemyapi.io/v2/{my_secrets.alchemy()}"
 w3 = Web3(Web3.HTTPProvider(node_url))
 
 

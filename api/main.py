@@ -2,19 +2,13 @@ from gevent import monkey
 
 monkey.patch_all()
 
-from flask import Flask
-from flask import jsonify
-from gevent.pywsgi import WSGIServer
-
 import nft
-import tx
-from flask_cors import CORS
-from flask_cors import cross_origin
+from flask import Flask, jsonify
+from gevent.pywsgi import WSGIServer
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
 app = Flask(__name__)
-CORS(app)
 
 
 @app.after_request
@@ -35,17 +29,18 @@ def v0_test():
 
 
 @app.route("/v0/history/<wallet_address>")
-@cross_origin()
 def v0_get_trading_history(wallet_address):
     if not wallet_address.startswith("0x"):
         return jsonify({"error": {"message": "Invalid wallet address"}})
     # TODO: reject invalid wallet address
 
     try:
-        return jsonify(
-            {"data": tx.get_nft_events(wallet_address, from_block="0xD13420")}
-        )
+        return jsonify({"data": nft.get_trading_history(wallet_address)})
     except Exception as e:
+        import sys
+        import traceback
+
+        traceback.print_exc(file=sys.stdout)
         return jsonify({"error": {"message": e.__class__.__name__}})
 
 

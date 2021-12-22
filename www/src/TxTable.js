@@ -73,7 +73,7 @@ const headCells = [
     id: 'calories',
     numeric: true,
     disablePadding: false,
-    label: 'Buyer/Seller',
+    label: 'Interacted With',
   },
   {
     id: 'fat',
@@ -216,15 +216,31 @@ export default function EnhancedTable() {
 
   const [rows, setRows] = React.useState([]);
   React.useEffect(() => {
-    fetch("http://localhost:8080/v0/history/0xf5324be5db41ba9e464e14f3940eccde98993682")
+    fetch("http://localhost:8080/v0/history/0x0ece90ef4a12273e9c2c06e7c86075d021db5a6a")
       .then(res => res.json())
       .then(_data => {
         const { data } = _data;
+        const { taxable_events } = data;
         const rows = [];
 
-        data.forEach(tx => {
+
+        taxable_events.forEach(tx => {
+          var interactedWith = "NULL";
+          if (tx.action === "transfer_in") {
+            interactedWith = tx.from;
+          } else if (tx.action === "transfer_out") {
+            interactedWith = tx.to;
+          }
+
+          let tokenId = tx.asset.token_id;
+          if (tokenId.length > 10) {
+            tokenId = `${tokenId.slice(0, 10)}...`;
+          }
+
+          let value = parseInt(tx.transaction.value, 10) / 1e18 * 4000;
+
           rows.push(
-            createData(tx.action, tx.trading_with, tx.asset.contract_address, tx.asset.token_id, 0)
+            createData(tx.action, interactedWith, tx.asset.contract_address, tokenId, value.toFixed(4))
           )
         });
         setRows(rows);

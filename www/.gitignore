@@ -15,11 +15,9 @@
 .env.*
 env.json
 
-build/
+/build
 
 *.log
-
-/public/bundle
 
 /db
 tmp

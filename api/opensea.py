@@ -1,13 +1,17 @@
-import requests
 import json
 
+import my_secrets
+import requests
 
 BASE_URL = "https://api.opensea.io/api/v1"
-DEFAULT_LIMIT = 20
+DEFAULT_LIMIT = 50
 
 
 class OpenseaApiException(Exception):
     pass
+
+
+REQUEST_HEADERS = {"Accept": "application/json", "X-API-KEY": my_secrets.opensea()}
 
 
 def get_assets(owner_address, offset=0, limit=DEFAULT_LIMIT):
@@ -17,7 +21,9 @@ def get_assets(owner_address, offset=0, limit=DEFAULT_LIMIT):
         "offset": offset,
         "limit": limit,
     }
-    response = requests.get(f"{BASE_URL}/assets", params=params)
+    response = requests.get(
+        f"{BASE_URL}/assets", params=params, headers=REQUEST_HEADERS
+    )
     return json.loads(response.text)
 
 
@@ -31,7 +37,9 @@ def get_events(
         "offset": offset,
         "limit": limit,
     }
-    response = requests.get(f"{BASE_URL}/events", params=params)
+    response = requests.get(
+        f"{BASE_URL}/events", params=params, headers=REQUEST_HEADERS
+    )
     if response.status_code == 200:
         return json.loads(response.text)
 

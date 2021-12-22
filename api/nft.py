@@ -1,12 +1,16 @@
+import mysql_utils
 import opensea
 from tx import w3
 
 NULL_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 
+conn = mysql_utils.get_connection()
+
+
 def _parse_action(from_address, to_address, owner_address):
     if from_address == NULL_ADDRESS and to_address == owner_address:
-        return "minted"
+        return "mint"
 
     if to_address == owner_address:
         return "transfer_in"
@@ -36,41 +40,69 @@ def get_trading_history(wallet_address, start_date=None, end_date=None):
 
     taxable_events = []
 
-    raw_events = opensea.get_events(wallet_address, "transfer", limit=20)
-    for event in raw_events.get("asset_events", []):
-        # Not sure how useful this id is
-        # opensea_id = event.get('asset', {}).get('id')
-        token_id = event.get("asset", {}).get("token_id")
-        permalink = event.get("asset", {}).get("permalink")
-        contract_address = event.get("contract_address")
-
-        from_address = event.get("from_account", {}).get("address")
-        to_address = event.get("to_account", {}).get("address")
-        action = _parse_action(from_address, to_address, wallet_address)
-
-        tx = event.get("transaction")
-        tx.pop("from_account")
-        tx.pop("to_account")
-
-        # add gas used and gas price to the tx objct
-        tx_hash = tx.get("transaction_hash")
-        if tx_hash:
-            tx.update(fees=_tx_fees(tx_hash))
-            tx.update(value=_tx_value(tx_hash))
-
-        taxable_events.append(
-            {
-                "asset": {
-                    # 'opensea_id': opensea_id,
-                    "token_id": token_id,
-                    "permalink": permalink,
-                    "contract_address": contract_address,
-                },
-                "from": from_address,
-                "to": to_address,
-                "action": action,
-                "transaction": tx,
-            }
+    offset = 0
+    while True:
+        # transfer events include sale, transfer, and minting
+        raw_events = opensea.get_events(
+            wallet_address, "transfer", offset=offset, limit=opensea.DEFAULT_LIMIT
         )
+        asset_events = raw_events.get("asset_events", [])
+        if len(asset_events) == 0:
+            break
+
+        offset += opensea.DEFAULT_LIMIT
+
+        for event in asset_events:
+            # Not sure how useful this id is
+            # opensea_id = event.get('asset', {}).get('id')
+            token_id = event.get("asset", {}).get("token_id")
+            permalink = event.get("asset", {}).get("permalink")
+            contract_address = event.get("contract_address")
+
+            from_address = event.get("from_account", {}).get("address")
+            to_address = event.get("to_account", {}).get("address")
+            action = _parse_action(from_address, to_address, wallet_address)
+
+            assert action in ("mint", "transfer_in", "transfer_out")
+
+            tx = event.get("transaction")
+            tx.pop("from_account")
+            tx.pop("to_account")
+
+            tx_hash = tx.get("transaction_hash")
+            if not tx_hash:
+                continue
+
+            # before calling expensive RPCs to get fees and value, check db
+            # if tx is already in db, append data from db to taxable event
+            db_event = mysql_utils.get_event(conn, wallet_address, tx_hash)
+            if not db_event:
+                # add gas used and gas price to the tx objct
+                tx.update(fees=_tx_fees(tx_hash))
+                tx.update(value=_tx_value(tx_hash))
+
+                db_event = {
+                    "asset": {
+                        # 'opensea_id': opensea_id,
+                        "token_id": token_id,
+                        "permalink": permalink,
+                        "contract_address": contract_address,
+                    },
+                    "from": from_address,
+                    "to": to_address,
+                    "action": action,
+                    "transaction": tx,
+                }
+
+                mysql_utils.insert_event(conn, wallet_address, tx_hash, db_event)
+
+            taxable_events.append(db_event)
 
     return {"taxable_events": taxable_events}
+
+
+if __name__ == "__main__":
+    for e in get_trading_history("0x0b096d1f0ba7ef2b3c7ecb8d4a5848043cdebd50").get(
+        "taxable_events"
+    ):
+        print(e)
