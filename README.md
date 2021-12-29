@@ -5,6 +5,8 @@
 - [x] Use tx hash to query tx details from Etherscan/OpenNode
 - [ ] Return taxable events within given date range
 - [ ] Dig up collection and present data image
+- [ ] Connect wallet (MetaMask)
+- [ ] Refactor TxTable, separate view/control logic
 
 # Dev
 

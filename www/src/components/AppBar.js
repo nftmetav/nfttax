@@ -7,14 +7,26 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { styled } from '@mui/system';
 
 const pages = ['Home', 'Pricing', 'FAQ'];
-const settings = ['Profile', 'Account', 'Logout'];
+const settings = ['Profile', 'Settings', 'Logout'];
+
+const ColorButton = styled(Button)(({ theme }) => ({
+  color: '#FFFFFF',
+  borderColor: '#FFFFFF',
+  borderRadius: 20,
+  paddingTop: 3,
+  paddingBottom: 2,
+  '&:hover': {
+    borderColor: '#FFFFFF',
+    backgroundColor: '#DC03FF',
+  },
+}));
 
 const ResponsiveAppBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -22,7 +34,6 @@ const ResponsiveAppBar = () => {
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
-    console.log(`handleOpenNavMenu: ${event}`)
   };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -74,7 +85,8 @@ const ResponsiveAppBar = () => {
               TaxHelper
             </Typography>
 
-            {/* Auto hide menu items: START */}
+            {/* When on mobile or window is narrow, instead of showing pages as tabs, stack them in a navigation menu */}
+            {/* Navigation menu: START */}
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
                 size="large"
@@ -119,8 +131,9 @@ const ResponsiveAppBar = () => {
             >
               NFTTaxHelper
             </Typography>
-            {/* Auto hide menu items: END */}
+            {/* Navigation menu: END */}
 
+            {/* Action menu as tabs: START */}
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               {pages.map((page) => (
                 <Button
@@ -132,13 +145,16 @@ const ResponsiveAppBar = () => {
                 </Button>
               ))}
             </Box>
+            {/* Action menu as tabs: END */}
 
             <Box sx={{ flexGrow: 0 }}>
+              {/* Tooltip title also depends on logged-in status */}
               <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                </IconButton>
+                <ColorButton onClick={handleOpenUserMenu} variant="outlined">
+                  Connect your wallet
+                </ColorButton>
               </Tooltip>
+              {/* Only show settings menu if the user has logged-in */}
               <Menu
                 sx={{ mt: '45px' }}
                 id="menu-appbar"
