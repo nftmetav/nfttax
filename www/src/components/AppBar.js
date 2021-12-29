@@ -12,25 +12,32 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { styled } from '@mui/system';
+import { useNavigate } from 'react-router-dom';
+import Link from '@mui/material/Link';
 
-const pages = ['Home', 'Pricing', 'FAQ'];
+const pages = ['Transactions', 'Pricing', 'FAQ'];
 const settings = ['Profile', 'Settings', 'Logout'];
 
+const white = '#FFFFFF';
+const purple = '#DC03FF';
+
 const ColorButton = styled(Button)(({ theme }) => ({
-  color: '#FFFFFF',
-  borderColor: '#FFFFFF',
+  color: white,
+  borderColor: white,
   borderRadius: 20,
   paddingTop: 3,
   paddingBottom: 2,
   '&:hover': {
-    borderColor: '#FFFFFF',
-    backgroundColor: '#DC03FF',
+    borderColor: white,
+    backgroundColor: purple,
   },
 }));
 
-const ResponsiveAppBar = () => {
+function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -47,12 +54,36 @@ const ResponsiveAppBar = () => {
     setAnchorElUser(null);
   };
 
+  const handleSettingsMenuItemClicked = (settingsPage) => {
+    setAnchorElUser(null); // dismiss the menu
+    if (settingsPage === 'Profile') {
+      navigate("/profile");
+    } else if (settingsPage === 'Settings') {
+      navigate("/settings");
+    } else if (settingsPage === 'Logout') {
+      console.log("Log out user");
+    }
+  }
+
+  const handleAppPageSelected = (appPage) => {
+    setAnchorElNav(null);
+    if (appPage === 'FAQ') {
+      navigate("/faq");
+    } else if (appPage === 'Transactions') {
+      navigate("/tx");
+    } else if (appPage === 'Pricing') {
+      navigate("/pricing");
+    } else {
+      navigate("/")
+    }
+  }
+
   const appBarTheme = createTheme({
     palette: {
       mode: 'dark',
-      primary: {
-        main: '#1976d2',
-      },
+      // primary: {
+      //   main: '#1976d2',
+      // },
     },
     typography: {
       fontFamily: 'Poppins',
@@ -67,23 +98,30 @@ const ResponsiveAppBar = () => {
       <AppBar position="static" color="primary">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{ display: { xs: 'none', md: 'flex' } }}
-            >
-              NFT
-            </Typography>
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              color="#DC03FF"
-              sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
-            >
-              TaxHelper
-            </Typography>
+            {/* 1st part */}
+            <Link href="/" underline="none">
+              <Typography
+                variant="h6"
+                noWrap
+                component="div"
+                color={white}
+                sx={{ display: { xs: 'none', md: 'flex' } }}
+              >
+                NFT
+              </Typography>
+            </Link>
+            {/* 2nd part */}
+            <Link href="/" underline="none">
+              <Typography
+                variant="h6"
+                noWrap
+                component="div"
+                color={purple}
+                sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
+              >
+                TaxHelper
+              </Typography>
+            </Link>
 
             {/* When on mobile or window is narrow, instead of showing pages as tabs, stack them in a navigation menu */}
             {/* Navigation menu: START */}
@@ -117,7 +155,7 @@ const ResponsiveAppBar = () => {
                 }}
               >
                 {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                  <MenuItem key={page} onClick={() => handleAppPageSelected(page)}>
                     <Typography textAlign="center">{page}</Typography>
                   </MenuItem>
                 ))}
@@ -138,7 +176,7 @@ const ResponsiveAppBar = () => {
               {pages.map((page) => (
                 <Button
                   key={page}
-                  onClick={handleCloseNavMenu}
+                  onClick={() => handleAppPageSelected(page)}
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
                   {page}
@@ -172,7 +210,7 @@ const ResponsiveAppBar = () => {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseNavMenu}>
+                  <MenuItem key={setting} onClick={() => handleSettingsMenuItemClicked(setting)}>
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>
                 ))}
