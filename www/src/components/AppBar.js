@@ -14,6 +14,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
+import { useState } from 'react';
 
 const pages = ['Transactions', 'Pricing', 'FAQ'];
 const settings = ['Profile', 'Settings', 'Logout'];
@@ -37,17 +38,23 @@ function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+
+  const handleOpenUserMenu = (event) => {
+    if (isLoggedIn) {
+      setAnchorElUser(event.currentTarget);
+    } else {
+      setIsLoggedIn(true);
+    }
   };
 
   const handleCloseUserMenu = () => {
@@ -62,6 +69,7 @@ function ResponsiveAppBar() {
       navigate("/settings");
     } else if (settingsPage === 'Logout') {
       console.log("Log out user");
+      setIsLoggedIn(false);
     }
   }
 
@@ -92,6 +100,46 @@ function ResponsiveAppBar() {
       },
     },
   });
+
+  const settingsMenu = (
+    <Menu
+      sx={{ mt: '45px' }}
+      id="menu-appbar"
+      anchorEl={anchorElUser}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      keepMounted
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      open={Boolean(anchorElUser)}
+      onClose={handleCloseUserMenu}
+    >
+      {settings.map((setting) => (
+        <MenuItem key={setting} onClick={() => handleSettingsMenuItemClicked(setting)}>
+          <Typography textAlign="center">{setting}</Typography>
+        </MenuItem>
+      ))}
+    </Menu>
+  );
+
+  const userMenuButton =
+    isLoggedIn
+      ? (
+        <Tooltip title="Open settings">
+          <ColorButton onClick={handleOpenUserMenu} variant="outlined">
+            Wallet Connected
+          </ColorButton>
+        </Tooltip>
+      )
+      : (
+        <ColorButton onClick={handleOpenUserMenu} variant="outlined">
+          Connected your wallet
+        </ColorButton>
+      );
 
   return (
     <ThemeProvider theme={appBarTheme}>
@@ -186,35 +234,11 @@ function ResponsiveAppBar() {
             {/* Action menu as tabs: END */}
 
             <Box sx={{ flexGrow: 0 }}>
-              {/* Tooltip title also depends on logged-in status */}
-              <Tooltip title="Open settings">
-                <ColorButton onClick={handleOpenUserMenu} variant="outlined">
-                  Connect your wallet
-                </ColorButton>
-              </Tooltip>
+              {/* The functionality of the user menu button depends on user auth state */}
+              {userMenuButton}
+
               {/* Only show settings menu if the user has logged-in */}
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={() => handleSettingsMenuItemClicked(setting)}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
+              {isLoggedIn ? settingsMenu : null}
             </Box>
           </Toolbar>
         </Container>
