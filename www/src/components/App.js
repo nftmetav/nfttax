@@ -1,14 +1,15 @@
 import './App.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AppBar from './AppBar';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import PricingPage from '../pages/PricingPage';
-import TxPage from '../pages/TxPage';
 import FaqPage from '../pages/FaqPage';
 import HomePage from '../pages/HomePage';
+import PricingPage from '../pages/PricingPage';
 import ProfilePage from '../pages/ProfilePage';
+import React from 'react';
 import SettingsPage from '../pages/SettingsPage';
+import TxPage from '../pages/TxPage';
 
-const App = () => {
+function App() {
   return (
     <BrowserRouter>
       <div className="App">

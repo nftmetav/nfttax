@@ -1,20 +1,19 @@
-import * as React from 'react';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import React, { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { styled } from '@mui/system';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
-import Link from '@mui/material/Link';
-import { useState } from 'react';
 
 const pages = ['Transactions', 'Pricing', 'FAQ'];
 const settings = ['Profile', 'Settings', 'Logout'];
@@ -22,7 +21,7 @@ const settings = ['Profile', 'Settings', 'Logout'];
 const white = '#FFFFFF';
 const purple = '#DC03FF';
 
-const ColorButton = styled(Button)(({ theme }) => ({
+const ColorButton = styled(Button)(() => ({
   color: white,
   borderColor: white,
   borderRadius: 20,
@@ -64,27 +63,27 @@ function ResponsiveAppBar() {
   const handleSettingsMenuItemClicked = (settingsPage) => {
     setAnchorElUser(null); // dismiss the menu
     if (settingsPage === 'Profile') {
-      navigate("/profile");
+      navigate('/profile');
     } else if (settingsPage === 'Settings') {
-      navigate("/settings");
+      navigate('/settings');
     } else if (settingsPage === 'Logout') {
-      console.log("Log out user");
+      console.log('Log out user');
       setIsLoggedIn(false);
     }
-  }
+  };
 
   const handleAppPageSelected = (appPage) => {
     setAnchorElNav(null);
     if (appPage === 'FAQ') {
-      navigate("/faq");
+      navigate('/faq');
     } else if (appPage === 'Transactions') {
-      navigate("/tx");
+      navigate('/tx');
     } else if (appPage === 'Pricing') {
-      navigate("/pricing");
+      navigate('/pricing');
     } else {
-      navigate("/")
+      navigate('/');
     }
-  }
+  };
 
   const appBarTheme = createTheme({
     palette: {
@@ -126,20 +125,19 @@ function ResponsiveAppBar() {
     </Menu>
   );
 
-  const userMenuButton =
-    isLoggedIn
-      ? (
-        <Tooltip title="Open settings">
-          <ColorButton onClick={handleOpenUserMenu} variant="outlined">
-            Wallet Connected
-          </ColorButton>
-        </Tooltip>
-      )
-      : (
+  const userMenuButton = isLoggedIn
+    ? (
+      <Tooltip title="Open settings">
         <ColorButton onClick={handleOpenUserMenu} variant="outlined">
-          Connected your wallet
+          Wallet Connected
         </ColorButton>
-      );
+      </Tooltip>
+    )
+    : (
+      <ColorButton onClick={handleOpenUserMenu} variant="outlined">
+        Connected your wallet
+      </ColorButton>
+    );
 
   return (
     <ThemeProvider theme={appBarTheme}>
@@ -245,5 +243,5 @@ function ResponsiveAppBar() {
       </AppBar>
     </ThemeProvider>
   );
-};
+}
 export default ResponsiveAppBar;

@@ -1,7 +1,14 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import DeleteIcon from '@mui/icons-material/Delete';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
+import PropTypes from 'prop-types';
+import React from 'react';
+import Switch from '@mui/material/Switch';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -11,15 +18,8 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
+import Typography from '@mui/material/Typography';
 import { visuallyHidden } from '@mui/utils';
 
 function createData(name, calories, fat, carbs, protein) {
@@ -96,8 +96,9 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-    props;
+  const {
+    onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort,
+  } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -151,7 +152,7 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
-const EnhancedTableToolbar = (props) => {
+function EnhancedTableToolbar(props) {
   const { numSelected } = props;
 
   return (
@@ -160,8 +161,7 @@ const EnhancedTableToolbar = (props) => {
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+          bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
         }),
       }}
     >
@@ -172,7 +172,9 @@ const EnhancedTableToolbar = (props) => {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected}
+          {' '}
+          selected
         </Typography>
       ) : (
         <Typography
@@ -200,7 +202,7 @@ const EnhancedTableToolbar = (props) => {
       )}
     </Toolbar>
   );
-};
+}
 
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
@@ -213,22 +215,21 @@ export default function EnhancedTable() {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
-
   const [rows, setRows] = React.useState([]);
+
   React.useEffect(() => {
-    fetch("http://localhost:8080/v0/history/0x50bd604c433C394e5e95F267DF8c4ca7fE760420")
-      .then(res => res.json())
-      .then(_data => {
+    fetch('http://localhost:8080/v0/history/0x50bd604c433C394e5e95F267DF8c4ca7fE760420')
+      .then((res) => res.json())
+      .then((_data) => {
         const { data } = _data;
-        const { taxable_events } = data;
-        const rows = [];
+        const { taxable_events: taxableEvents } = data;
+        const _rows = []; /* eslint no-underscore-dangle: 0 */
 
-
-        taxable_events.forEach(tx => {
-          var interactedWith = "NULL";
-          if (tx.action === "transfer_in") {
+        taxableEvents.forEach((tx) => {
+          let interactedWith = 'NULL';
+          if (tx.action === 'transfer_in') {
             interactedWith = tx.from;
-          } else if (tx.action === "transfer_out") {
+          } else if (tx.action === 'transfer_out') {
             interactedWith = tx.to;
           }
 
@@ -237,15 +238,15 @@ export default function EnhancedTable() {
             tokenId = `${tokenId.slice(0, 10)}...`;
           }
 
-          let value = parseInt(tx.transaction.value, 10) / 1e18 * 4000;
+          const value = (parseInt(tx.transaction.value, 10) / 1e18) * 4000;
 
-          rows.push(
-            createData(tx.action, interactedWith, tx.asset.contract_address, tokenId, value.toFixed(4))
-          )
+          _rows.push(
+            createData(tx.action, interactedWith, tx.asset.contract_address, tokenId, value.toFixed(4)),
+          );
         });
-        setRows(rows);
+        setRows(_rows);
       });
-  }, [])
+  }, []);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -298,8 +299,7 @@ export default function EnhancedTable() {
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   return (
     <Box sx={{ width: '80%' }}>
