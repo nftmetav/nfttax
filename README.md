@@ -3,10 +3,10 @@
 - [x] Parse OpenSea event objects to get all taxable ations like buy/sell/transfer etc
 - [x] Figure out if OpenSea API captures off-platform events
 - [x] Use tx hash to query tx details from Etherscan/OpenNode
+- [x] Refactor TxTable, separate view/control logic
 - [ ] Return taxable events within given date range
 - [ ] Dig up collection and present data image
 - [ ] Connect wallet (MetaMask)
-- [ ] Refactor TxTable, separate view/control logic
 
 # Dev
 
