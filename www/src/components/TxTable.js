@@ -245,8 +245,10 @@ export default function EnhancedTable() {
           );
         });
         setRows(_rows);
-      });
-  }, []);
+      }).catch(
+        e => console.log(`${e}`)
+      );
+  }, [])
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

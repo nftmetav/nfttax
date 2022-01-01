@@ -142,7 +142,7 @@ function ResponsiveAppBar() {
   return (
     <ThemeProvider theme={appBarTheme}>
       <AppBar position="static" color="primary">
-        <Container maxWidth="xl">
+        <Container maxWidth="false">
           <Toolbar disableGutters>
             {/* 1st part */}
             <Link href="/" underline="none">
