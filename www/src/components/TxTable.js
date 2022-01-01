@@ -218,7 +218,8 @@ export default function EnhancedTable() {
   const [rows, setRows] = React.useState([]);
 
   React.useEffect(() => {
-    fetch('http://localhost:8080/v0/history/0x50bd604c433C394e5e95F267DF8c4ca7fE760420')
+    const walletAddress = window.localStorage.getItem('walletAddress');
+    fetch(`http://localhost:8080/v0/history/${walletAddress}`)
       .then((res) => res.json())
       .then((_data) => {
         const { data } = _data;
@@ -246,9 +247,9 @@ export default function EnhancedTable() {
         });
         setRows(_rows);
       }).catch(
-        e => console.log(`${e}`)
+        (e) => console.log(`${e}`),
       );
-  }, [])
+  }, []);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

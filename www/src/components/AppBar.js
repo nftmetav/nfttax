@@ -33,6 +33,9 @@ const ColorButton = styled(Button)(() => ({
   },
 }));
 
+/**
+ * TODO: the state of isLoggedIn should be updated upon successful logins initiated in LoginPage
+ */
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -52,6 +55,7 @@ function ResponsiveAppBar() {
     if (isLoggedIn) {
       setAnchorElUser(event.currentTarget);
     } else {
+      navigate('/login');
       setIsLoggedIn(true);
     }
   };
@@ -69,6 +73,7 @@ function ResponsiveAppBar() {
     } else if (settingsPage === 'Logout') {
       console.log('Log out user');
       setIsLoggedIn(false);
+      window.localStorage.removeItem('walletAddress');
     }
   };
 
@@ -135,7 +140,7 @@ function ResponsiveAppBar() {
     )
     : (
       <ColorButton onClick={handleOpenUserMenu} variant="outlined">
-        Connected your wallet
+        Connect your wallet
       </ColorButton>
     );
 

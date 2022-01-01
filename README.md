@@ -7,6 +7,7 @@
 - [ ] Return taxable events within given date range
 - [ ] Dig up collection and present data image
 - [ ] Connect wallet (MetaMask)
+- [ ] Update icons of wallet providers in LoginPage.js
 
 # Dev
 

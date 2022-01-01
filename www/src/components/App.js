@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AppBar from './AppBar';
 import FaqPage from '../pages/FaqPage';
 import HomePage from '../pages/HomePage';
+import LoginPage from '../pages/LoginPage';
 import PricingPage from '../pages/PricingPage';
 import ProfilePage from '../pages/ProfilePage';
 import React from 'react';
@@ -14,14 +15,17 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <AppBar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/tx" element={<TxPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/faq" element={<FaqPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-        </Routes>
+        <div className="page-container">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/tx" element={<TxPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/faq" element={<FaqPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/login" element={<LoginPage />} />
+          </Routes>
+        </div>
       </div>
     </BrowserRouter>
   );
