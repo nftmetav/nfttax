@@ -9,6 +9,7 @@ import {
   Post,
   Posts,
   Pricing,
+  Login,
 } from "./open";
 import { Dashboard, DashLayout, Profile, Settings } from "./protected";
 
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="" element={<Posts />} />
             <Route path=":postId" element={<Post />} />
           </Route>
+          <Route path="login" element={<Login />} />
         </Route>
         <Route path="/dashboard" element={<DashLayout />}>
           <Route index element={<Dashboard />} />

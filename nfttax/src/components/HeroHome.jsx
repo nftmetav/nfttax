@@ -1,6 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function HeroHome() {
+  const navigate = useNavigate();
+  const gotoLogin = () => {
+    navigate("/login");
+  };
+
   return (
     <section className="relative">
       {/* Illustration behind hero content */}
@@ -62,7 +68,10 @@ export default function HeroHome() {
                 data-aos-delay="300"
               >
                 <div>
-                  <button className="text-white py-1.5 px-3 rounded-lg  bg-indigo-600 hover:bg-indigo-700 w-auto">
+                  <button
+                    className="text-white py-1.5 px-3 rounded-lg  bg-indigo-600 hover:bg-indigo-700 w-auto"
+                    onClick={gotoLogin}
+                  >
                     Get Started
                   </button>
                 </div>

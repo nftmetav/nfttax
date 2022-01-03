@@ -6,7 +6,6 @@ export default function Home() {
     <main className="flex-grow">
       <HeroHome />
       <LearnBlock />
-      {/* <Features /> */}
     </main>
   );
 }
