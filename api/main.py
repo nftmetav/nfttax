@@ -2,9 +2,10 @@ from gevent import monkey
 
 monkey.patch_all()
 
-import nft
 from flask import Flask, jsonify
 from gevent.pywsgi import WSGIServer
+
+import nft
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.

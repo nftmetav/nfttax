@@ -1,7 +1,6 @@
-import json
+import requests
 
 import my_secrets
-import requests
 
 BASE_URL = "https://api.opensea.io/api/v1"
 DEFAULT_LIMIT = 50
@@ -24,7 +23,10 @@ def get_assets(owner_address, offset=0, limit=DEFAULT_LIMIT):
     response = requests.get(
         f"{BASE_URL}/assets", params=params, headers=REQUEST_HEADERS
     )
-    return json.loads(response.text)
+    if response.status_code == 200:
+        return response.json()
+
+    return {}
 
 
 def get_events(
@@ -41,7 +43,9 @@ def get_events(
         f"{BASE_URL}/events", params=params, headers=REQUEST_HEADERS
     )
     if response.status_code == 200:
-        return json.loads(response.text)
+        return response.json()
 
     if response.status_code == 403:
         raise OpenseaApiException()
+    
+    return {}

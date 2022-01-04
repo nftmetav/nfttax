@@ -12,7 +12,9 @@
 # Dev
 
 ## API
+
 Install dependencies:
+
 ```
 $ cd api/
 $ virtualenv --python python3 ~/envs/nft_trading_history
@@ -21,26 +23,30 @@ $ pip install -r requirements.txt
 ```
 
 Start the API server:
+
 ```
-$ cp ./api_keys.json.template ./api_keys.json # then add api keys to api_keys.json
+$ cp ./my_secrets.json.template ./my_secrets.json # then add api keys to my_secrets.json
 $ python main.py
 ```
 
 ## MySQL
 
 Pull the image and run the server:
+
 ```
 $ docker pull mysql/mysql-server:8.0.27
 $ docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=<rootpwd> -d mysql/mysql-server:8.0.27
 ```
 
 Allow host processes to connect to the containerized MySQL server:
+
 ```
 $ docker exec -it mysql2 bash -c 'mysql -uroot -p'
 mysql> update mysql.user set host="%" where user="root";
 ```
 
 Restart container, connect to server via TCP, and create table:
+
 ```
 $ docker restart mysql
 $ mysql --host=127.0.0.1 --port=3306 -uroot -p
@@ -53,6 +59,7 @@ mysql> CREATE TABLE `events` (
 ```
 
 ## Webapp
+
 ```
 $ cd www/
 $ npm ci && npm run start
@@ -63,6 +70,7 @@ $ npm ci && npm run start
 Inside Cloud Shell, deploy API server and Webapp separately.
 
 ## API
+
 ```
 $ cd api/
 $ cp my_secrets.json.template my_secrets.json # then add keys/passwords to my_secrets.json
@@ -71,6 +79,7 @@ $ gcloud app deploy
 ```
 
 ## Web
+
 Webpack must be listed in the dependencies of the `package.json` file because by default `devDependencies` are not installed when the app is deployed to App Engine.
 
 ```
