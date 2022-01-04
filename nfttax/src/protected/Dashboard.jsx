@@ -1,5 +1,5 @@
 import React from "react";
-import { TableCard } from "../components";
+import { EnhancedTable } from "../components";
 
 export default function Dashboard() {
   return (
@@ -12,7 +12,7 @@ export default function Dashboard() {
       {/* datepicker */}
 
       {/* Cards */}
-      <TableCard />
+      <EnhancedTable />
     </div>
   );
 }
