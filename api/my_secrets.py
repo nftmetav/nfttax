@@ -24,3 +24,7 @@ def alchemy():
 
 def mysql_password():
     return secrets.get("mysql")
+
+
+def cloudsql_password():
+    return secrets.get("cloudsql")

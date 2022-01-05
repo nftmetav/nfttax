@@ -1,9 +1,4 @@
-from gevent import monkey
-
-monkey.patch_all()
-
 from flask import Flask, jsonify
-from gevent.pywsgi import WSGIServer
 
 import nft
 
@@ -49,5 +44,4 @@ def v0_get_trading_history(wallet_address):
 
 
 if __name__ == "__main__":
-    http_server = WSGIServer(("127.0.0.1", 8080), app)
-    http_server.serve_forever()
+    app.run(host="127.0.0.1", port=8080, debug=True)
