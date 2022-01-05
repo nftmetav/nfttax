@@ -17,8 +17,8 @@ Install dependencies:
 
 ```
 $ cd api/
-$ virtualenv --python python3 ~/envs/nft_trading_history
-$ source ~/envs/nft_trading_history/bin/activate
+$ virtualenv --python python3 ~/envs/nfttax
+$ source ~/envs/nfttax/bin/activate
 $ pip install -r requirements.txt
 ```
 
@@ -45,24 +45,25 @@ $ docker exec -it mysql2 bash -c 'mysql -uroot -p'
 mysql> update mysql.user set host="%" where user="root";
 ```
 
-Restart container, connect to server via TCP, and create table:
+Restart container, connect to server via TCP, and create db & table:
 
 ```
 $ docker restart mysql
 $ mysql --host=127.0.0.1 --port=3306 -uroot -p
+mysql> CREATE DATABASE nft;
 mysql> CREATE TABLE `events` (
   `owner_address` varchar(64) NOT NULL,
   `tx_hash` varchar(128) NOT NULL,
   `event` json NOT NULL,
   PRIMARY KEY (`owner_address`,`tx_hash`)
-)
+);
 ```
 
 ## Webapp
 
 ```
-$ cd www/
-$ npm ci && npm run start
+$ cd nfttax/
+$ npm ci && npm run dev
 ```
 
 # Google App Engine Deploy
@@ -74,16 +75,6 @@ Inside Cloud Shell, deploy API server and Webapp separately.
 ```
 $ cd api/
 $ cp my_secrets.json.template my_secrets.json # then add keys/passwords to my_secrets.json
-$ gcloud config set project <project_name>
-$ gcloud app deploy
-```
-
-## Web
-
-Webpack must be listed in the dependencies of the `package.json` file because by default `devDependencies` are not installed when the app is deployed to App Engine.
-
-```
-$ cd web/
 $ gcloud config set project <project_name>
 $ gcloud app deploy
 ```
