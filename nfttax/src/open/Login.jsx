@@ -43,9 +43,55 @@ const LoginOptions = ({ loginHandler }) => {
   );
 };
 
+const loginWithMetaMask = async () => {
+  const eth = window.ethereum;
+  if (eth) {
+    if (!eth.selectedAddress) {
+      await eth.enable();
+    }
+
+    console.log(`Wallet address: ${eth.selectedAddress}`);
+    // send wallet address to backend and generate a nonce
+    const response = await fetch(
+      `http://localhost:8080/v0/connect/${eth.selectedAddress}`
+    );
+    const { data } = await response.json();
+    const { nonce } = data;
+    console.log(nonce);
+
+    const from = eth.selectedAddress;
+    const params = [nonce, from];
+    const method = "personal_sign";
+    eth.sendAsync({ method, params, from }, (err, result) => {
+      const { result: sig } = result;
+      console.log(`Signature: ${sig}`);
+
+      fetch(`http://localhost:8080/v0/connect/verify`, {
+        headers: { "Content-Type": "application/json" },
+        method: "post",
+        body: JSON.stringify({ from, sig }),
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          const { verified } = result.data;
+          console.log(`Wallet verified: ${verified}`);
+        });
+    });
+  }
+};
+
 export default function LoginPage() {
   const loginHandler = (method) => {
     console.log(`Logging user in with ${method}`);
+
+    switch (method) {
+      case "MetaMask": {
+        loginWithMetaMask();
+        break;
+      }
+      default:
+        console.error(`Login method not supported yet: ${method}`);
+    }
   };
 
   return (
