@@ -13,7 +13,7 @@ export const auth = (authState = initialAuthState, action) => {
         case START_METAMASK_LOGIN: {
             return {
                 ...authState,
-                loginInProgress: true, 
+                loginInProgress: true,
             }
         }
         case METAMASK_LOGIN_SUCCESS: {

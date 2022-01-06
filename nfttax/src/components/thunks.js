@@ -1,4 +1,4 @@
-import { completeMetaMaskLogin } from "./actions";
+import { metaMaskLoginSucceeded } from "./actions";
 
 export const startLogin = (method) => async (dispatch) => {
   console.log(`Logging user in with ${method}`);
@@ -6,8 +6,7 @@ export const startLogin = (method) => async (dispatch) => {
   const eth = window.ethereum;
   if (eth) {
     if (!eth.selectedAddress) {
-      // TODO: enable() has been deprecated
-      await eth.enable();
+      await eth.request({ method: "eth_requestAccounts" });
     }
 
     console.log(`Wallet address: ${eth.selectedAddress}`);
@@ -28,6 +27,11 @@ export const connectAndSignNonce = (address) => async (dispatch) => {
     const params = [nonce, from];
     const method = "personal_sign";
     eth.sendAsync({ method, params, from }, (err, result) => {
+      if (err && err.code === 4001) {
+        console.log("User denied/canceled signing request");
+        return;
+      }
+
       const { result: sig } = result;
       console.log(`Signature: ${sig}`);
 
@@ -37,17 +41,20 @@ export const connectAndSignNonce = (address) => async (dispatch) => {
 };
 
 export const verifyAddress = (address, sig) => async (dispatch) => {
-    const from = address;
-    fetch(`http://localhost:8080/v0/connect/verify`, {
-        headers: { "Content-Type": "application/json" },
-        method: "post",
-        body: JSON.stringify({ from, sig }),
-      })
-        .then((response) => response.json())
-        .then((result) => {
-          const { verified } = result.data;
-          console.log(`Wallet verified: ${verified}`);
+  const from = address;
+  fetch(`http://localhost:8080/v0/connect/verify`, {
+    headers: { "Content-Type": "application/json" },
+    method: "post",
+    body: JSON.stringify({ from, sig }),
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      const { verified } = result.data;
+      console.log(`Wallet verified: ${verified}`);
 
-          dispatch(completeMetaMaskLogin(address));
-        });
-}
+      if (verified) {
+        dispatch(metaMaskLoginSucceeded(address));
+        window.location.replace("http://localhost:3000/dashboard");
+      }
+    });
+};

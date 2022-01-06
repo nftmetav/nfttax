@@ -2,9 +2,8 @@ import json
 from contextlib import closing
 
 import my_secrets
-import settings
-
 import pymysql
+import settings
 from pymysql.err import IntegrityError
 
 

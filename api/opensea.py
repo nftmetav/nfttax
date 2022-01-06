@@ -1,6 +1,5 @@
-import requests
-
 import my_secrets
+import requests
 
 BASE_URL = "https://api.opensea.io/api/v1"
 DEFAULT_LIMIT = 50
@@ -47,5 +46,5 @@ def get_events(
 
     if response.status_code == 403:
         raise OpenseaApiException()
-    
+
     return {}

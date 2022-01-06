@@ -5,7 +5,7 @@ export const startMetaMaskLogin = () => ({
 });
 
 export const METAMASK_LOGIN_SUCCESS = 'METAMASK_LOGIN_SUCCESS';
-export const completeMetaMaskLogin = (address) => ({
+export const metaMaskLoginSucceeded = (address) => ({
     type: METAMASK_LOGIN_SUCCESS,
     payload: { address },
 })

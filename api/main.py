@@ -1,7 +1,6 @@
+import nft
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-
-import nft
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -22,10 +21,10 @@ def v0_connect(wallet_address):
     nonce = "".join([random.choice(string.ascii_lowercase) for i in range(32)])
 
     from mysql_utils import (
+        UserExistsException,
         get_connection,
         insert_user,
         update_nonce,
-        UserExistsException,
     )
 
     conn = get_connection()
@@ -37,12 +36,7 @@ def v0_connect(wallet_address):
     return jsonify({"data": {"nonce": nonce}})
 
 
-@app.route(
-    "/v0/connect/verify",
-    methods=[
-        "POST",
-    ],
-)
+@app.route("/v0/connect/verify", methods=["POST"])
 def v0_connect_verify():
     wallet_address = request.json.get("from")
     signature = request.json.get("sig")
@@ -50,10 +44,9 @@ def v0_connect_verify():
     if not wallet_address or not signature:
         return jsonify({"error": {"message": "Missing required params"}})
 
-    from web3.auto import w3
     from eth_account.messages import defunct_hash_message
-
-    from mysql_utils import get_user, get_connection
+    from mysql_utils import get_connection, get_user
+    from web3.auto import w3
 
     nonce = get_user(get_connection(), wallet_address).get("nonce")
 
