@@ -4,7 +4,11 @@ import { useNavigate } from "react-router-dom";
 export default function HeroHome() {
   const navigate = useNavigate();
   const gotoLogin = () => {
-    navigate("/login");
+    const store = window.localStorage.getItem("persist:root");
+    const { auth } = JSON.parse(store);
+    const { userLoggedIn } = JSON.parse(auth);
+
+    userLoggedIn ? navigate("/dashboard") : navigate("/login");
   };
 
   return (

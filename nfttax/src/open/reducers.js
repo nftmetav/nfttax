@@ -2,6 +2,7 @@ import {
   METAMASK_LOGIN_SUCCESS,
   START_METAMASK_LOGIN,
   LOGIN_FAILURE,
+  CLEAR_FAILURE,
 } from "./actions";
 
 const initialAuthState = {
@@ -27,6 +28,12 @@ export const auth = (authState = initialAuthState, action) => {
         ...authState,
         loginInProgress: false,
         failureReason: reason,
+      };
+    }
+    case CLEAR_FAILURE: {
+      return {
+        ...authState,
+        failureReason: null,
       };
     }
     case METAMASK_LOGIN_SUCCESS: {

@@ -6,8 +6,11 @@ export default function Navigation() {
   const navigate = useNavigate();
 
   const gotoLoginPage = () => {
-    console.log("Logging user in");
-    navigate("/login");
+    const store = window.localStorage.getItem("persist:root");
+    const { auth } = JSON.parse(store);
+    const { userLoggedIn } = JSON.parse(auth);
+
+    userLoggedIn ? navigate("/dashboard") : navigate("/login");
   };
 
   return (

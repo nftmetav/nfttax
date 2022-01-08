@@ -225,9 +225,11 @@ export default function EnhancedTable() {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    fetch(
-      "http://localhost:8080/v0/history/0x50bd604c433C394e5e95F267DF8c4ca7fE760420"
-    )
+    const store = window.localStorage.getItem("persist:root");
+    const { auth } = JSON.parse(store);
+    const { addresses } = JSON.parse(auth);
+
+    fetch(`http://localhost:8080/v0/history/${addresses[0]}`)
       .then((res) => res.json())
       .then((_data) => {
         const { data } = _data;

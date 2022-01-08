@@ -3,6 +3,11 @@ import { metaMaskLoginSucceeded, loginFailed } from "./actions";
 export const startLogin = (method) => async (dispatch) => {
   console.log(`Logging user in with ${method}`);
 
+  if (method != "MetaMask") {
+    dispatch(loginFailed(`${method} not supported yet.`));
+    return;
+  }
+
   const eth = window.ethereum;
   if (eth) {
     if (!eth.selectedAddress) {

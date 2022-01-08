@@ -15,3 +15,9 @@ export const loginFailed = (reason) => ({
   type: LOGIN_FAILURE,
   payload: { reason },
 });
+
+export const CLEAR_FAILURE = "CLEAR_FAILURE";
+export const clearFailure = () => ({
+  type: CLEAR_FAILURE,
+  payload: {},
+});

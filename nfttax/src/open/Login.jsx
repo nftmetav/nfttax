@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { LoginOptions, LoginFailureBanner } from "../components";
 import { connect } from "react-redux";
 import { startLogin } from "./thunks";
+import { clearFailure } from "./actions";
 
-function LoginPage({ onStartLogin, failureReason = null }) {
+function LoginPage({ onStartLogin, clearFailure, failureReason = null }) {
+  useEffect(() => {
+    clearFailure();
+  }, []);
+
   return (
     <section className="relative">
       <div className="grid grid-cols-1 max-w-6xl mx-auto px-10 text-white">
@@ -25,6 +30,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onStartLogin: (method) => dispatch(startLogin(method)),
+  clearFailure: () => dispatch(clearFailure()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);
