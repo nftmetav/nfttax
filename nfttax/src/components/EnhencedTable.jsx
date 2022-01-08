@@ -226,7 +226,7 @@ export default function EnhancedTable() {
 
   useEffect(() => {
     fetch(
-      "https://api.nfttax.app/v0/history/0x50bd604c433C394e5e95F267DF8c4ca7fE760420"
+      "http://localhost:8080/v0/history/0x50bd604c433C394e5e95F267DF8c4ca7fE760420"
     )
       .then((res) => res.json())
       .then((_data) => {

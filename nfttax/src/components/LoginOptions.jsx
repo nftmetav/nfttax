@@ -1,16 +1,5 @@
 import React from "react";
 
-import { connect } from "react-redux";
-import { startLogin } from "./thunks";
-
-const mapStateToProps = (state) => ({
-  auth: state.auth,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  onStartLogin: (method) => dispatch(startLogin(method)),
-});
-
 const LoginMethod = ({ icon, alt, method, loginHandler }) => {
   return (
     <div
@@ -27,7 +16,7 @@ const LoginMethod = ({ icon, alt, method, loginHandler }) => {
   );
 };
 
-function LoginOptions({ auth, onStartLogin }) {
+export default function LoginOptions({ onStartLogin }) {
   return (
     <div className="place-self-center mt-10 text-xl space-y-3 border border-white rounded-md p-5">
       <LoginMethod
@@ -53,5 +42,3 @@ function LoginOptions({ auth, onStartLogin }) {
     </div>
   );
 }
-
-export default connect(mapStateToProps, mapDispatchToProps)(LoginOptions);

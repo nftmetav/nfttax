@@ -1,4 +1,4 @@
-import { metaMaskLoginSucceeded } from "./actions";
+import { metaMaskLoginSucceeded, loginFailed } from "./actions";
 
 export const startLogin = (method) => async (dispatch) => {
   console.log(`Logging user in with ${method}`);
@@ -11,6 +11,12 @@ export const startLogin = (method) => async (dispatch) => {
 
     console.log(`Wallet address: ${eth.selectedAddress}`);
     dispatch(connectAndSignNonce(eth.selectedAddress));
+  } else {
+    dispatch(
+      loginFailed(
+        "Web3 provider isn't available. Make sure you have wallet extensions installed."
+      )
+    );
   }
 };
 
@@ -28,7 +34,7 @@ export const connectAndSignNonce = (address) => async (dispatch) => {
     const method = "personal_sign";
     eth.sendAsync({ method, params, from }, (err, result) => {
       if (err && err.code === 4001) {
-        console.log("User denied/canceled signing request");
+        dispatch(loginFailed("User denied/canceled signing request"));
         return;
       }
 
@@ -55,6 +61,8 @@ export const verifyAddress = (address, sig) => async (dispatch) => {
       if (verified) {
         dispatch(metaMaskLoginSucceeded(address));
         window.location.replace("http://localhost:3000/dashboard");
+      } else {
+        dispatch(loginFailed("Couldn't verify wallet address."));
       }
     });
 };

@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import { LoginOptions } from "../components";
+import React from "react";
+import { LoginOptions, LoginFailureBanner } from "../components";
+import { connect } from "react-redux";
+import { startLogin } from "./thunks";
 
-export default function LoginPage() {
+function LoginPage({ onStartLogin, failureReason = null }) {
   return (
     <section className="relative">
       <div className="grid grid-cols-1 max-w-6xl mx-auto px-10 text-white">
@@ -9,8 +11,20 @@ export default function LoginPage() {
           <h1 className="text-2xl">Connect your wallet</h1>
         </div>
 
-        <LoginOptions />
+        <LoginOptions onStartLogin={onStartLogin} />
+
+        {failureReason ? <LoginFailureBanner reason={failureReason} /> : null}
       </div>
     </section>
   );
 }
+
+const mapStateToProps = (state) => ({
+  failureReason: state.auth.failureReason,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  onStartLogin: (method) => dispatch(startLogin(method)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);
