@@ -1,7 +1,6 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import Box from "@mui/material/Box";
-import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
@@ -22,13 +21,14 @@ import { visuallyHidden } from "@mui/utils";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 
-function createData(name, calories, fat, carbs, protein) {
+// asset, action, price, date, network (ethereum, polygon, etc)
+function createRowDataObj(asset, action, price, date, network) {
   return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
+    asset,
+    action,
+    price,
+    date,
+    network,
   };
 }
 
@@ -64,34 +64,34 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: "name",
+    id: "asset",
     numeric: false,
-    disablePadding: true,
-    label: "Action",
-  },
-  {
-    id: "calories",
-    numeric: true,
-    disablePadding: false,
-    label: "Interacted With",
-  },
-  {
-    id: "fat",
-    numeric: true,
     disablePadding: false,
     label: "Asset",
   },
   {
-    id: "carbs",
+    id: "action",
     numeric: true,
     disablePadding: false,
-    label: "Token ID",
+    label: "Activity",
   },
   {
-    id: "protein",
+    id: "price",
     numeric: true,
     disablePadding: false,
-    label: "Amount ($)",
+    label: "Price",
+  },
+  {
+    id: "date",
+    numeric: true,
+    disablePadding: false,
+    label: "Date",
+  },
+  {
+    id: "network",
+    numeric: true,
+    disablePadding: false,
+    label: "Network",
   },
 ];
 
@@ -111,17 +111,6 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              "aria-label": "select all desserts",
-            }}
-          />
-        </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -156,6 +145,22 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
+
+function AssetWithIcon({ imageUrl, assetLink, contractName, tokenId }) {
+  const _tokenId =
+    tokenId.length <= 10 ? tokenId : `${tokenId.substring(0, 10)}...`;
+
+  return (
+    <div style={{ display: "flex" }}>
+      <img src={imageUrl} width="36" height="36" />
+      <span style={{ padding: 5, textDecoration: "underline" }}>
+        <a href={assetLink}>
+          {contractName} &#35;{_tokenId}
+        </a>
+      </span>
+    </div>
+  );
+}
 
 function EnhancedTableToolbar(props) {
   const { numSelected } = props;
@@ -237,11 +242,11 @@ export default function EnhancedTable() {
         const _rows = []; /* eslint no-underscore-dangle: 0 */
 
         taxableEvents.forEach((tx) => {
-          let interactedWith = "NULL";
+          let activity = "NULL";
           if (tx.action === "transfer_in") {
-            interactedWith = tx.from;
+            activity = "⬇";
           } else if (tx.action === "transfer_out") {
-            interactedWith = tx.to;
+            activity = "⬆";
           }
 
           let tokenId = tx.asset.token_id;
@@ -252,12 +257,12 @@ export default function EnhancedTable() {
           const value = (parseInt(tx.transaction.value, 10) / 1e18) * 4000;
 
           _rows.push(
-            createData(
-              tx.action,
-              interactedWith,
-              tx.asset.contract_address,
-              tokenId,
-              value.toFixed(4)
+            createRowDataObj(
+              tx.asset,
+              activity,
+              value.toFixed(4),
+              tx.transaction.timestamp.replace("T", " "),
+              "Ethereum"
             )
           );
         });
@@ -282,23 +287,21 @@ export default function EnhancedTable() {
   };
 
   const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelected(newSelected);
+    // const selectedIndex = selected.indexOf(name);
+    // let newSelected = [];
+    // if (selectedIndex === -1) {
+    //   newSelected = newSelected.concat(selected, name);
+    // } else if (selectedIndex === 0) {
+    //   newSelected = newSelected.concat(selected.slice(1));
+    // } else if (selectedIndex === selected.length - 1) {
+    //   newSelected = newSelected.concat(selected.slice(0, -1));
+    // } else if (selectedIndex > 0) {
+    //   newSelected = newSelected.concat(
+    //     selected.slice(0, selectedIndex),
+    //     selected.slice(selectedIndex + 1)
+    //   );
+    // }
+    // setSelected(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -341,39 +344,29 @@ export default function EnhancedTable() {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.name);
-                  const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name)}
+                      onClick={(event) => handleClick(event, row.asset)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.calories}
+                      key={row.asset.contract_address}
                       selected={isItemSelected}
                     >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                          inputProps={{
-                            "aria-labelledby": labelId,
-                          }}
+                      <TableCell align="left">
+                        <AssetWithIcon
+                          imageUrl={row.asset.image_url}
+                          assetLink={row.asset.permalink}
+                          tokenId={row.asset.token_id}
+                          contractName={row.asset.contract_name}
                         />
                       </TableCell>
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                      >
-                        {row.name}
-                      </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
-                      <TableCell align="right">{row.protein}</TableCell>
+                      <TableCell align="right">{row.action}</TableCell>
+                      <TableCell align="right">{row.price}</TableCell>
+                      <TableCell align="right">{row.date}</TableCell>
+                      <TableCell align="right">{row.network}</TableCell>
                     </TableRow>
                   );
                 })}

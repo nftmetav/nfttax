@@ -57,6 +57,8 @@ def get_trading_history(wallet_address, start_date=None, end_date=None):
             # opensea_id = event.get('asset', {}).get('id')
             token_id = event.get("asset", {}).get("token_id")
             permalink = event.get("asset", {}).get("permalink")
+            image_url = event.get("asset", {}).get("image_url")
+            contract_name = event.get("asset", {}).get("asset_contract", {}).get("name")
             contract_address = event.get("contract_address")
 
             from_address = event.get("from_account", {}).get("address")
@@ -88,7 +90,9 @@ def get_trading_history(wallet_address, start_date=None, end_date=None):
                         # 'opensea_id': opensea_id,
                         "token_id": token_id,
                         "permalink": permalink,
+                        "image_url": image_url,
                         "contract_address": contract_address,
+                        "contract_name": contract_name,
                     },
                     "from": from_address,
                     "to": to_address,
