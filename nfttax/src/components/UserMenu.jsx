@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Transition from "../utils/Transition";
+import { truncateString } from "../utils/utils";
 
-export default function UserMenu() {
+export default function UserMenu({ userName }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef(null);
@@ -33,6 +34,16 @@ export default function UserMenu() {
     return () => document.removeEventListener("keydown", keyHandler);
   });
 
+  const onClickSettings = (setDropdownOpen) => {
+    setDropdownOpen(false);
+    console.log("User clicks settings");
+  };
+
+  const onClickLogout = (setDropdownOpen) => {
+    setDropdownOpen(false);
+    console.log("User clicks logout");
+  };
+
   return (
     <div className="relative inline-flex">
       <button
@@ -43,8 +54,8 @@ export default function UserMenu() {
         aria-expanded={dropdownOpen}
       >
         <div className="flex items-center truncate">
-          <span className="truncate ml-2 text-sm font-medium group-hover:text-gray-800">
-            user
+          <span className="truncate ml-2 text-sm font-medium group-hover:text-gray-800 px-2 border">
+            {truncateString(userName, 10, "middle")}
           </span>
           <svg
             className="w-3 h-3 shrink-0 ml-1 fill-current text-gray-400"
@@ -74,8 +85,8 @@ export default function UserMenu() {
             <li>
               <Link
                 className="font-medium text-sm text-indigo-500 hover:text-indigo-600 flex items-center py-1 px-3"
-                to="/"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
+                to="#"
+                onClick={() => onClickSettings(setDropdownOpen)}
               >
                 Settings
               </Link>
@@ -83,8 +94,8 @@ export default function UserMenu() {
             <li>
               <Link
                 className="font-medium text-sm text-indigo-500 hover:text-indigo-600 flex items-center py-1 px-3"
-                to="/"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
+                to="#"
+                onClick={() => onClickLogout(setDropdownOpen)}
               >
                 Logout
               </Link>

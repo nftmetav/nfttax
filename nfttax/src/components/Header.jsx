@@ -1,8 +1,8 @@
 import React from "react";
-import SearchModal from "./SearchModal";
 import UserMenu from "./UserMenu";
+import { connect } from "react-redux";
 
-export default function Header() {
+function Header({ address }) {
   return (
     <div>
       <header className="sticky top-0 border-b border-gray-200 z-30">
@@ -13,11 +13,11 @@ export default function Header() {
 
             {/* Header: Right side */}
             <div className="flex items-center">
-              <SearchModal />
+              {/* <SearchModal /> */}
               {/* <Help /> */}
               {/*  Divider */}
-              <hr className="w-px h-6 bg-gray-200 mx-3" />
-              <UserMenu />
+              {/* <hr className="w-px h-6 bg-gray-200 mx-3" /> */}
+              <UserMenu userName={address} />
             </div>
           </div>
         </div>
@@ -25,3 +25,9 @@ export default function Header() {
     </div>
   );
 }
+
+const mapStateToProps = (state) => ({
+  address: state.auth.addresses[0],
+});
+
+export default connect(mapStateToProps, null)(Header);

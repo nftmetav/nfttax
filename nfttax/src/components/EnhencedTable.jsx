@@ -20,6 +20,7 @@ import Typography from "@mui/material/Typography";
 import { visuallyHidden } from "@mui/utils";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
+import { truncateString } from "../utils/utils";
 
 // asset, action, price, date, network (ethereum, polygon, etc)
 function createRowDataObj(asset, action, price, date, network) {
@@ -147,15 +148,12 @@ EnhancedTableHead.propTypes = {
 };
 
 function AssetWithIcon({ imageUrl, assetLink, contractName, tokenId }) {
-  const _tokenId =
-    tokenId.length <= 10 ? tokenId : `${tokenId.substring(0, 10)}...`;
-
   return (
     <div style={{ display: "flex" }}>
       <img src={imageUrl} width="36" height="36" />
       <span style={{ padding: 5, textDecoration: "underline" }}>
         <a href={assetLink}>
-          {contractName} &#35;{_tokenId}
+          {contractName} &#35;{truncateString(tokenId, 10, "right")}
         </a>
       </span>
     </div>
@@ -244,9 +242,9 @@ export default function EnhancedTable() {
         taxableEvents.forEach((tx) => {
           let activity = "NULL";
           if (tx.action === "transfer_in") {
-            activity = "⬇";
+            activity = "⬇ Buy";
           } else if (tx.action === "transfer_out") {
-            activity = "⬆";
+            activity = "⬆ Sell";
           }
 
           let tokenId = tx.asset.token_id;
@@ -261,7 +259,7 @@ export default function EnhancedTable() {
               tx.asset,
               activity,
               value.toFixed(4),
-              tx.transaction.timestamp.replace("T", " "),
+              tx.transaction.timestamp.replace("T", " "), // UTC, TODO: convert to user timezone
               "Ethereum"
             )
           );
