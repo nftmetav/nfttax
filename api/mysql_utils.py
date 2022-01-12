@@ -1,10 +1,11 @@
 import json
 from contextlib import closing
 
-import my_secrets
 import pymysql
-import settings
 from pymysql.err import IntegrityError
+
+import my_secrets
+import settings
 
 
 class UserExistsException(Exception):
@@ -74,7 +75,7 @@ def insert_user(conn, wallet_address, nonce):
 
 def get_user(conn, wallet_address):
     with closing(conn.cursor()) as cursor:
-        sql = "SELECT nonce FROM users WHERE wallet_address=%s LIMIT 1"
+        sql = "SELECT nonce FROM users WHERE wallet_address=%s ORDER BY id DESC LIMIT 1"
         try:
             cursor.execute(sql, (wallet_address,))
             ret = cursor.fetchone()
