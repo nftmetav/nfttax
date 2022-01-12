@@ -41,7 +41,7 @@ $ docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=<rootpwd> -d mysql
 Allow host processes to connect to the containerized MySQL server:
 
 ```
-$ docker exec -it mysql2 bash -c 'mysql -uroot -p'
+$ docker exec -it mysql bash -c 'mysql -uroot -p'
 mysql> update mysql.user set host="%" where user="root";
 ```
 

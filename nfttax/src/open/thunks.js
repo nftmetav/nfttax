@@ -1,4 +1,4 @@
-import { metaMaskLoginSucceeded, loginFailed } from "./actions";
+import { loginFailed, metaMaskLoginSucceeded } from "./actions";
 
 export const startLogin = (method) => async (dispatch) => {
   console.log(`Logging user in with ${method}`);

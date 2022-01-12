@@ -1,4 +1,8 @@
 export function truncateString(input, maxLen, style) {
+  if (input == null) {
+    return '';
+  }
+
   if (input.length <= maxLen) {
     return input;
   }
