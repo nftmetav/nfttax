@@ -23,11 +23,12 @@ import React, { useEffect, useState } from "react";
 import { truncateString } from "../utils/utils";
 
 // asset, action, price, date, network (ethereum, polygon, etc)
-function createRowDataObj(asset, action, price, date, network) {
+function createRowDataObj(asset, action, value, fees, date, network) {
   return {
     asset,
     action,
-    price,
+    value,
+    fees,
     date,
     network,
   };
@@ -77,10 +78,16 @@ const headCells = [
     label: "Activity",
   },
   {
-    id: "price",
+    id: "value",
     numeric: true,
     disablePadding: false,
-    label: "Price",
+    label: "Values",
+  },
+  {
+    id: "fees",
+    numeric: true,
+    disablePadding: false,
+    label: "Fees",
   },
   {
     id: "date",
@@ -220,12 +227,13 @@ EnhancedTableToolbar.propTypes = {
 
 export default function EnhancedTable() {
   const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("calories");
+  const [orderBy, setOrderBy] = useState("date");
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [dense, setDense] = useState(false);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [rows, setRows] = useState([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
     const store = window.localStorage.getItem("persist:root");
@@ -239,12 +247,13 @@ export default function EnhancedTable() {
         const { taxable_events: taxableEvents } = data;
         const _rows = []; /* eslint no-underscore-dangle: 0 */
 
+        console.log(`${taxableEvents.length} records fetched from backend`);
         taxableEvents.forEach((tx) => {
           let activity = "NULL";
-          if (tx.action === "transfer_in") {
-            activity = "⬇ Buy";
+          if (tx.action === "transfer_in" || tx.action === "mint") {
+            activity = "In ⬇";
           } else if (tx.action === "transfer_out") {
-            activity = "⬆ Sell";
+            activity = "Out ⬆";
           }
 
           let tokenId = tx.asset.token_id;
@@ -252,13 +261,17 @@ export default function EnhancedTable() {
             tokenId = `${tokenId.slice(0, 10)}...`;
           }
 
-          const value = (parseInt(tx.transaction.value, 10) / 1e18) * 4000;
+          const value = parseInt(tx.transaction.value, 10) / 1e18;
+          const gasPrice = parseInt(tx.transaction.fees.gas_price, 10);
+          const gasUsed = parseInt(tx.transaction.fees.gas_used, 10);
+          const fees = (gasPrice * gasUsed) / 1e18;
 
           _rows.push(
             createRowDataObj(
               tx.asset,
               activity,
-              value.toFixed(4),
+              value.toFixed(3),
+              fees.toFixed(10),
               tx.transaction.timestamp.replace("T", " "), // UTC, TODO: convert to user timezone
               "Ethereum"
             )
@@ -267,7 +280,7 @@ export default function EnhancedTable() {
         setRows(_rows);
       })
       .catch((e) => console.log(`${e}`));
-  }, []);
+  }, [dataLoaded]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -284,25 +297,14 @@ export default function EnhancedTable() {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    // const selectedIndex = selected.indexOf(name);
-    // let newSelected = [];
-    // if (selectedIndex === -1) {
-    //   newSelected = newSelected.concat(selected, name);
-    // } else if (selectedIndex === 0) {
-    //   newSelected = newSelected.concat(selected.slice(1));
-    // } else if (selectedIndex === selected.length - 1) {
-    //   newSelected = newSelected.concat(selected.slice(0, -1));
-    // } else if (selectedIndex > 0) {
-    //   newSelected = newSelected.concat(
-    //     selected.slice(0, selectedIndex),
-    //     selected.slice(selectedIndex + 1)
-    //   );
-    // }
-    // setSelected(newSelected);
+  const handleClick = (event, asset) => {
+    console.log(
+      `Table row clicked, asset: ${asset.contract_address}#${asset.token_id}`
+    );
   };
 
   const handleChangePage = (event, newPage) => {
+    console.log(`Change to new page: #${newPage}`);
     setPage(newPage);
   };
 
@@ -350,7 +352,7 @@ export default function EnhancedTable() {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.asset.contract_address}
+                      key={index}
                       selected={isItemSelected}
                     >
                       <TableCell align="left">
@@ -362,7 +364,8 @@ export default function EnhancedTable() {
                         />
                       </TableCell>
                       <TableCell align="right">{row.action}</TableCell>
-                      <TableCell align="right">{row.price}</TableCell>
+                      <TableCell align="right">{row.value}</TableCell>
+                      <TableCell align="right">{row.fees}</TableCell>
                       <TableCell align="right">{row.date}</TableCell>
                       <TableCell align="right">{row.network}</TableCell>
                     </TableRow>
