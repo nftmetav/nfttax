@@ -240,7 +240,9 @@ export default function EnhancedTable() {
     const { auth } = JSON.parse(store);
     const { addresses } = JSON.parse(auth);
 
-    fetch(`http://localhost:8080/v0/history/${addresses[0]}`)
+    fetch(
+      `http://${import.meta.env.VITE_API_SERVER}/v0/history/${addresses[0]}`
+    )
       .then((res) => res.json())
       .then((_data) => {
         const { data } = _data;
