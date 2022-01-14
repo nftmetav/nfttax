@@ -10,7 +10,7 @@ export default function Sidebar() {
     <div
       id="sidebar"
       className={
-        "flex flex-col z-40 left-0 top-0 transform h-screen overflow-y-scroll no-scrollbar w-52 2xl:!w-64 shrink-0 bg-gray-800 p-4 transition-all duration-200 ease-in-out translate-x-0"
+        "flex flex-col z-40 left-0 top-0 transform max-h-full overflow-y-scroll no-scrollbar w-52 2xl:!w-64 shrink-0 bg-gray-800 p-4 transition-all duration-200 ease-in-out translate-x-0"
       }
     >
       {/* Sidebar header */}
