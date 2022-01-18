@@ -67,14 +67,6 @@ export const verifyAddress = (address, sig) => async (dispatch) => {
 
       if (verified) {
         dispatch(metaMaskLoginSucceeded(address));
-        let web_server = import.meta.env.VITE_WEB_SERVER;
-        if (web_server.startsWith("localhost")) {
-          web_server = "http://" + web_server
-        } else if (!web_server.startsWith("https://")) {
-          web_server = "https://" + web_server
-        }
-
-        window.location.replace(`${web_server}/dashboard`);
       } else {
         dispatch(loginFailed("Couldn't verify wallet address."));
       }

@@ -1,10 +1,16 @@
 import React, { useEffect } from "react";
-import { LoginOptions, LoginFailureBanner } from "../components";
 import { connect } from "react-redux";
-import { startLogin } from "./thunks";
+import { Navigate } from "react-router-dom";
+import { LoginFailureBanner, LoginOptions } from "../components";
 import { clearFailure } from "./actions";
+import { startLogin } from "./thunks";
 
-function LoginPage({ onStartLogin, clearFailure, failureReason = null }) {
+function LoginPage({
+  onStartLogin,
+  clearFailure,
+  userLoggedIn = false,
+  failureReason = null,
+}) {
   useEffect(() => {
     clearFailure();
   }, []);
@@ -16,9 +22,13 @@ function LoginPage({ onStartLogin, clearFailure, failureReason = null }) {
           <h1 className="text-2xl">Connect your wallet</h1>
         </div>
 
-        <LoginOptions onStartLogin={onStartLogin} />
+        {!userLoggedIn ? (
+          <LoginOptions onStartLogin={onStartLogin} />
+        ) : (
+          <Navigate to="/dashboard" />
+        )}
 
-        {failureReason ? <LoginFailureBanner reason={failureReason} /> : null}
+        {failureReason && <LoginFailureBanner reason={failureReason} />}
       </div>
     </section>
   );
@@ -26,6 +36,7 @@ function LoginPage({ onStartLogin, clearFailure, failureReason = null }) {
 
 const mapStateToProps = (state) => ({
   failureReason: state.auth.failureReason,
+  userLoggedIn: state.auth.userLoggedIn,
 });
 
 const mapDispatchToProps = (dispatch) => ({
