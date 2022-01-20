@@ -14,10 +14,8 @@ export default function Pricing() {
         <div className="col-lg-5 text-white">
           <h1 className="font-weight-light">Pricing</h1>
           <p>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book.
+            Our app is completely free to use. If you like it you can buy us a
+            coffee by donating to the this address: 0x1234567890abcef.
           </p>
         </div>
       </div>

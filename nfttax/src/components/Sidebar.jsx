@@ -1,9 +1,10 @@
 import React from "react";
-import { Navigate, NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import Logo from "./Logo";
 
 export default function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { pathname } = location;
 
   return (
@@ -146,7 +147,7 @@ export default function Sidebar() {
                   className="text-sm font-medium ml-3 2xl:opacity-100 duration-200"
                   onClick={() => {
                     localStorage.clear();
-                    <Navigate to="/dashboard" replace={true} />;
+                    navigate("/");
                   }}
                 >
                   Logout

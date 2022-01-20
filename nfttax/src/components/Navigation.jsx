@@ -4,12 +4,11 @@ import Logo from "./Logo";
 
 export default function Navigation() {
   const navigate = useNavigate();
+  const store = window.localStorage.getItem("persist:root");
+  const { auth } = JSON.parse(store);
+  const { userLoggedIn } = JSON.parse(auth);
 
   const gotoLoginPage = () => {
-    const store = window.localStorage.getItem("persist:root");
-    const { auth } = JSON.parse(store);
-    const { userLoggedIn } = JSON.parse(auth);
-
     userLoggedIn ? navigate("/dashboard") : navigate("/login");
   };
 
@@ -25,9 +24,11 @@ export default function Navigation() {
             <li>
               <Link to="/pricing">Pricing</Link>
             </li>
+            {/*
             <li>
               <Link to="/blog">Blog</Link>
             </li>
+            */}
             <li>
               <Link to="/about">About Us</Link>
             </li>
@@ -36,7 +37,7 @@ export default function Navigation() {
             className="text-white py-1 px-3 rounded-full bg-indigo-600 hover:bg-indigo-700 w-auto"
             onClick={gotoLoginPage}
           >
-            Connect Wallet
+            {userLoggedIn ? "Dashboard" : "Connect Wallet"}
           </button>
         </div>
       </div>

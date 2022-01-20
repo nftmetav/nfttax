@@ -30,10 +30,12 @@ export default function App() {
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="pricing" element={<Pricing />} />
+          {/*
           <Route path="blog" element={<Blog />}>
             <Route path="" element={<Posts />} />
             <Route path=":postId" element={<Post />} />
           </Route>
+          */}
           <Route path="login" element={<Login />} />
         </Route>
         <Route path="/dashboard" element={<DashLayout />}>
