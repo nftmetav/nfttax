@@ -1,89 +1,32 @@
-from flask import Flask, jsonify, request
+from sys import exit
+
+from decouple import config
 from flask_cors import CORS
+from flask_migrate import Migrate
 
-import nft
+from apps import create_app, db
+from apps.config import config_dict
 
-# If `entrypoint` is not defined in app.yaml, App Engine will look for an app
-# called `app` in `main.py`.
-app = Flask(__name__)
-cors = CORS(app, resources={r"/v0/*": {"origins": "http://localhost:3000"}})
+DEBUG = config("DEBUG", default=True, cast=bool)
 
+# The configuration
+get_config_mode = "Debug" if DEBUG else "Production"
 
-@app.route("/_/_/")
-def hello():
-    return "Hello World!"
+try:
+    # Load the configuration using the default values
+    app_config = config_dict[get_config_mode.capitalize()]
 
+except KeyError:
+    exit("Error: Invalid <config_mode>. Expected values [Debug, Production] ")
 
-@app.route("/v0/connect/<wallet_address>")
-def v0_connect(wallet_address):
-    import random
-    import string
+app = create_app(app_config)
+CORS(app, resources={r"/v0/*": {"origins": "http://localhost:3000"}})
+Migrate(app, db)
 
-    nonce = "".join([random.choice(string.ascii_lowercase) for i in range(32)])
-
-    from mysql_utils import (
-        UserExistsException,
-        get_connection,
-        insert_user,
-        update_nonce,
-    )
-
-    conn = get_connection()
-    try:
-        insert_user(conn, wallet_address, nonce)
-    except UserExistsException:
-        update_nonce(conn, wallet_address, nonce)
-
-    return jsonify({"data": {"nonce": nonce}})
-
-
-@app.route("/v0/connect/verify", methods=["POST"])
-def v0_connect_verify():
-    wallet_address = request.json.get("from")
-    signature = request.json.get("sig")
-
-    if not wallet_address or not signature:
-        return jsonify({"error": {"message": "Missing required params"}})
-
-    from eth_account.messages import defunct_hash_message
-    from web3.auto import w3
-
-    from mysql_utils import get_connection, get_user
-
-    nonce = get_user(get_connection(), wallet_address).get("nonce")
-
-    message_hash = defunct_hash_message(text=nonce)
-    signer = w3.eth.account.recoverHash(message_hash, signature=signature)
-
-    def _match():
-        return signer.lower() == wallet_address.lower()
-
-    return {"data": {"wallet_address": wallet_address, "verified": _match()}}
-
-
-@app.route("/test")
-def v0_test():
-    return jsonify({"data": [{"a": 1, "b": 2}, {"a": 3, "b": 4}]})
-
-
-@app.route("/v0/history/<wallet_address>")
-def v0_get_trading_history(wallet_address):
-    if not wallet_address.startswith("0x"):
-        return jsonify({"error": {"message": "Invalid wallet address"}})
-    # TODO: reject invalid wallet address
-
-    # Normalize wallet address
-    wallet_address = wallet_address.lower()
-
-    try:
-        return jsonify({"data": nft.get_trading_history(wallet_address)})
-    except Exception as e:
-        import sys
-        import traceback
-
-        traceback.print_exc(file=sys.stdout)
-        return jsonify({"error": {"message": e.__class__.__name__}})
-
+if DEBUG:
+    app.logger.info("DEBUG       = " + str(DEBUG))
+    app.logger.info("Environment = " + get_config_mode)
+    app.logger.info("DBMS        = " + app_config.SQLALCHEMY_DATABASE_URI)
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8080, debug=True)
+    app.run(host="127.0.0.1", port=8080)

@@ -1,5 +1,6 @@
-import my_secrets
+# import my_secrets
 import requests
+from decouple import config
 
 BASE_URL = "https://api.opensea.io/api/v1"
 DEFAULT_LIMIT = 50
@@ -9,7 +10,9 @@ class OpenseaApiException(Exception):
     pass
 
 
-REQUEST_HEADERS = {"Accept": "application/json", "X-API-KEY": my_secrets.opensea()}
+opensea_api_key = config("OPENSEA")
+
+REQUEST_HEADERS = {"Accept": "application/json", "X-API-KEY": opensea_api_key}
 
 
 def get_assets(owner_address, offset=0, limit=DEFAULT_LIMIT):

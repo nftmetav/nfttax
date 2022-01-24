@@ -1,8 +1,11 @@
-import my_secrets
+# import my_secrets
 import requests
+from decouple import config
 from web3 import Web3
 
-node_url = f"https://eth-mainnet.alchemyapi.io/v2/{my_secrets.alchemy()}"
+alchemy_api_key = config("ALCHEMY")
+
+node_url = f"https://eth-mainnet.alchemyapi.io/v2/{alchemy_api_key}"
 w3 = Web3(Web3.HTTPProvider(node_url))
 
 
@@ -10,17 +13,17 @@ class AlchemyApiException(Exception):
     pass
 
 
-class Event(object):
-    def __init__(self, wallet_address, action, other_party, asset):
-        self.wallet_address = wallet_address
-        self.action = action
-        self.other_party = other_party
-        self.asset = asset  # contract addr & token_id
+# class Event(object):
+#     def __init__(self, wallet_address, action, other_party, asset):
+#         self.wallet_address = wallet_address
+#         self.action = action
+#         self.other_party = other_party
+#         self.asset = asset  # contract addr & token_id
 
 
 def get_nft_events(wallet_address, from_block="latest", to_block="latest"):
     """Only scanning the blocks for buying/selling/minting."""
-
+    wallet_address = "0xf5324be5db41ba9e464e14f3940eccde98993682"
     # First we get all tx initiated by the given wallet address. Since selling must happen after buying/minting,
     # we can get all bought/minted NFTs and then check if they have been sold (using contract address)
     response = requests.post(

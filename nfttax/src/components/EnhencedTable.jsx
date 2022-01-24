@@ -22,10 +22,10 @@ import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { truncateString } from "../utils/utils";
 
-// asset, action, price, date, network (ethereum, polygon, etc)
-function createRowDataObj(asset, action, value, fees, date, network) {
+// tx, action, price, date, network (ethereum, polygon, etc)
+function createRowDataObj(tx, action, value, fees, date, network) {
   return {
-    asset,
+    tx,
     action,
     value,
     fees,
@@ -258,23 +258,23 @@ export default function EnhancedTable() {
             activity = "Out ⬆";
           }
 
-          let tokenId = tx.asset.token_id;
+          let tokenId = tx.token_id;
           if (tokenId.length > 10) {
             tokenId = `${tokenId.slice(0, 10)}...`;
           }
 
-          const value = parseInt(tx.transaction.value, 10) / 1e18;
-          const gasPrice = parseInt(tx.transaction.fees.gas_price, 10);
-          const gasUsed = parseInt(tx.transaction.fees.gas_used, 10);
+          const value = parseInt(tx.value, 10) / 1e18;
+          const gasPrice = parseInt(tx.gas_price, 10);
+          const gasUsed = parseInt(tx.gas_used, 10);
           const fees = (gasPrice * gasUsed) / 1e18;
 
           _rows.push(
             createRowDataObj(
-              tx.asset,
+              tx,
               activity,
               value.toFixed(3),
               fees.toFixed(10),
-              tx.transaction.timestamp.replace("T", " "), // UTC, TODO: convert to user timezone
+              tx.timestamp.replace("T", " "), // UTC, TODO: convert to user timezone
               "Ethereum"
             )
           );
@@ -359,10 +359,10 @@ export default function EnhancedTable() {
                     >
                       <TableCell align="left">
                         <AssetWithIcon
-                          imageUrl={row.asset.image_url}
-                          assetLink={row.asset.permalink}
-                          tokenId={row.asset.token_id}
-                          contractName={row.asset.contract_name}
+                          imageUrl={row.tx.image_url}
+                          assetLink={row.tx.permalink}
+                          tokenId={row.tx.token_id}
+                          contractName={row.tx.contract_name}
                         />
                       </TableCell>
                       <TableCell align="right">{row.action}</TableCell>
