@@ -23,7 +23,6 @@ class AlchemyApiException(Exception):
 
 def get_nft_events(wallet_address, from_block="latest", to_block="latest"):
     """Only scanning the blocks for buying/selling/minting."""
-    wallet_address = "0xf5324be5db41ba9e464e14f3940eccde98993682"
     # First we get all tx initiated by the given wallet address. Since selling must happen after buying/minting,
     # we can get all bought/minted NFTs and then check if they have been sold (using contract address)
     response = requests.post(

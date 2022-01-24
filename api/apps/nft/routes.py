@@ -75,7 +75,7 @@ def v0_get_trading_history(wallet_address):
 
     # Normalize wallet address
     wallet_address = wallet_address.lower()
-    wallet_address = "0xf5324be5db41ba9e464e14f3940eccde98993682"
+
     try:
         return jsonify({"data": get_trading_history(wallet_address)})
     except Exception as e:
